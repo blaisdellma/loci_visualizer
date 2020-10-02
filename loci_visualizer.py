@@ -159,21 +159,19 @@ def main():
                     ispeed = 0
                 if event.key == pygame.K_6:
                     ispeed = -1
-                if event.key == pygame.K_PERIOD:
+                if event.key == pygame.K_UP:
                     if n_lines < 6:
                         n_lines += 1
                         scale = mscale/n_lines
                         reset = 1
-                        print(n_lines)
-                if event.key == pygame.K_COMMA:
+                if event.key == pygame.K_DOWN:
                     if n_lines > 1:
                         n_lines -= 1
                         scale = mscale/n_lines
                         reset = 1
-                        print(n_lines)
-                if event.key == pygame.K_g:
+                if event.key == pygame.K_m:
                     mode = 1-mode
-                if event.key == pygame.K_h:
+                if event.key == pygame.K_l:
                     show_lines = 1-show_lines
 
         if reset:
@@ -208,10 +206,10 @@ def main():
 
         draw_text_right("Pause:           P",screen,0,white,10,10)
         draw_text_right("Reset:           R",screen,0,white,10,30)
-        draw_text_right("Change Mode:     G",screen,0,white,10,50)
-        draw_text_right("Toggle Lines:    H",screen,0,white,10,70)
-        draw_text_right("Increase N:      .",screen,0,white,10,90)
-        draw_text_right("Decrease N:      ,",screen,0,white,10,110)
+        draw_text_right("Change Mode:     M",screen,0,white,10,50)
+        draw_text_right("Toggle Lines:    L",screen,0,white,10,70)
+        draw_text_right("Increase N:      \u2191",screen,0,white,10,90)
+        draw_text_right("Decrease N:      \u2193",screen,0,white,10,110)
         draw_text_right("Change Speed:  1-6",screen,0,white,10,130)
 
         pygame.display.flip()
