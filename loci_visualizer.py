@@ -13,10 +13,27 @@ H = 600
 scale = 120
 dot_sz = 3
 
+max_sweep = 30;
+
 black = (0,0,0)
 white = (255,255,255)
 
+red = (255,0,0)
+green = (0,255,0)
+blue = (0,0,255)
+colors = [red, green, blue]
+ncolors = len(colors)
+
 speeds = [10, 25, 50, 100, 200]
+
+def get_xy(ths):
+    x = sum([math.cos(a) for a in ths])
+    y = sum([math.sin(a) for a in ths])
+
+    x = int(W/2 + x*scale)
+    y = int(H/2 - y*scale)
+
+    return (x,y)
 
 # display splash screen and wait for keypress
 def splash():
@@ -29,6 +46,30 @@ def splash():
 
         pygame.time.wait(100)
 
+def get_next_point(n_lines,sweep):
+    lines_surf = pygame.Surface((W,H),pygame.SRCALPHA)
+
+    if sweep == -1:
+        ths = [random.uniform(0,1) for i in range(n_lines)]
+        ths = [math.pi*prob_scale(a,n_lines) for a in ths]
+    else:
+        if sweep > max_sweep/2:
+            ths = [math.pi*(2-2*sweep/max_sweep) for i in range(n_lines)]
+        else:
+            ths = [0 for i in range(n_lines)]
+            i = 0
+            while sweep*2*n_lines/max_sweep > i+1:
+                i += 1
+                ths[i] = math.pi
+
+            ths[i] = (i-sweep*2*n_lines/max_sweep)*math.pi
+
+    icolor = 0
+    for a in range(len(ths)):
+        pygame.draw.line(lines_surf,colors[icolor],get_xy(ths[0:a]),get_xy(ths[0:(a+1)]),3)
+        icolor = (icolor + 1) % ncolors
+
+    return (get_xy(ths),lines_surf)
 
 # main program
 def main():
@@ -95,18 +136,22 @@ def main():
 
         if add_pt:
 
-            ths = [random.uniform(0,1) for i in range(n_lines)]
-            ths = [math.pi*prob_scale(a,n_lines) for a in ths]
+            # ths = [random.uniform(0,1) for i in range(n_lines)]
+            # ths = [math.pi*prob_scale(a,n_lines) for a in ths]
+            #
+            # x = sum([math.cos(a) for a in ths])
+            # y = sum([math.sin(a) for a in ths])
+            #
+            # x = int(W/2 + x*scale)
+            # y = int(H/2 - y*scale)
 
-            x = sum([math.cos(a) for a in ths])
-            y = sum([math.sin(a) for a in ths])
-
-            x = int(W/2 + x*scale)
-            y = int(H/2 - y*scale)
+            (xy,lines_surf) = get_next_point(n_lines,-1)
+            (x,y) = xy
 
             pygame.draw.circle(pts_surf,white,(x,y),dot_sz)
 
-        screen.blit(pts_surf,(0,0));
+        screen.blit(pts_surf,(0,0))
+        screen.blit(lines_surf,(0,0))
 
         pygame.display.flip()
 
