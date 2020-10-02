@@ -10,7 +10,8 @@ def prob_scale(x,n):
 
 W = 800
 H = 600
-scale = 120
+mscale = 300
+scale = 150
 dot_sz = 3
 
 max_sweep = 30;
@@ -31,9 +32,14 @@ def get_xy(ths):
     y = sum([math.sin(a) for a in ths])
 
     x = int(W/2 + x*scale)
-    y = int(H/2 - y*scale)
+    y = int(H*3/4 - y*scale)
 
     return (x,y)
+
+def draw_axes(surf):
+    pygame.draw.line(surf,white,(int(W/2),H),(int(W/2),0))
+    pygame.draw.line(surf,white,(0,int(H*3/4)),(W,int(H*3/4)))
+
 
 # display splash screen and wait for keypress
 def splash():
@@ -53,16 +59,16 @@ def get_next_point(n_lines,sweep):
         ths = [random.uniform(0,1) for i in range(n_lines)]
         ths = [math.pi*prob_scale(a,n_lines) for a in ths]
     else:
-        if sweep > max_sweep/2:
-            ths = [math.pi*(2-2*sweep/max_sweep) for i in range(n_lines)]
+        if sweep > 0.5:
+            ths = [math.pi*(2-2*sweep) for i in range(n_lines)]
         else:
             ths = [0 for i in range(n_lines)]
             i = 0
-            while sweep*2*n_lines/max_sweep > i+1:
-                i += 1
+            while 2*n_lines*sweep > i+1:
                 ths[i] = math.pi
+                i += 1
 
-            ths[i] = (i-sweep*2*n_lines/max_sweep)*math.pi
+            ths[i] = (2*n_lines*sweep-i)*math.pi
 
     icolor = 0
     for a in range(len(ths)):
@@ -74,8 +80,10 @@ def get_next_point(n_lines,sweep):
 # main program
 def main():
 
+    global scale
+
     n_lines = 2
-    scale = 240/n_lines
+    scale = mscale/n_lines
 
     ispeed = 2
 
@@ -87,11 +95,13 @@ def main():
     screen.fill(black)
 
     pts_surf = pygame.Surface((W,H));
-    pygame.draw.line(pts_surf,white,(int(W/2),H),(int(W/2),0))
-    pygame.draw.line(pts_surf,white,(0,int(H/2)),(W,int(H/2)))
+    draw_axes(pts_surf)
 
     add_pt = 1
     reset = 0
+    mode = 0
+
+    sweep = 0
 
     splash()
 
@@ -118,20 +128,21 @@ def main():
                 if event.key == pygame.K_PERIOD:
                     if n_lines < 6:
                         n_lines += 1
-                        scale = 240/n_lines
+                        scale = mscale/n_lines
                         reset = 1
                         print(n_lines)
                 if event.key == pygame.K_COMMA:
                     if n_lines > 1:
                         n_lines -= 1
-                        scale = 240/n_lines
+                        scale = mscale/n_lines
                         reset = 1
                         print(n_lines)
+                if event.key == pygame.K_g:
+                    mode = 1-mode;
 
         if reset:
             pts_surf.fill(black)
-            pygame.draw.line(pts_surf,white,(int(W/2),H),(int(W/2),0))
-            pygame.draw.line(pts_surf,white,(0,int(H/2)),(W,int(H/2)))
+            draw_axes(pts_surf)
             reset = 0
 
         if add_pt:
@@ -145,11 +156,18 @@ def main():
             # x = int(W/2 + x*scale)
             # y = int(H/2 - y*scale)
 
-            (xy,lines_surf) = get_next_point(n_lines,-1)
+            (xy,lines_surf) = get_next_point(n_lines,sweep if mode else -1)
             (x,y) = xy
+
+            if mode:
+                sweep = sweep + 0.051;
+                while sweep > 1:
+                    sweep -= 1;
 
             pygame.draw.circle(pts_surf,white,(x,y),dot_sz)
 
+        # screen.fill(black)
+        # draw_axes(screen)
         screen.blit(pts_surf,(0,0))
         screen.blit(lines_surf,(0,0))
 
