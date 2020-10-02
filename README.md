@@ -9,3 +9,5 @@ What is the set of all points that lie at the end of two equal line segments pla
 ## The visualizer
 
 The 3 "umbrella_locus" scripts are included, but all functionality is captured in the final version loci_visualizer.py
+
+![Loci Visualizer Screenshot](screenshots/loci_viz_screenshot.png)
